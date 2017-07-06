@@ -12,5 +12,5 @@ rm db.sqlite3
 echo Deleting stored images
 rm images/*
 
-echo Delete name and embedding database 
+echo Deleting name and embedding database 
 rm -rf database

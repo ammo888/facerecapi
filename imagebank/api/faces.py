@@ -18,6 +18,7 @@ class Faces(object):
             self.embeddings = pickle.load(handle)
 
         self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
+        self.threshold = 0.43
 
         self.imagebank = 'http://127.0.0.1:8000/imagebank/'
 
@@ -28,7 +29,11 @@ class Faces(object):
 
         if embedding:
             dist, ind = self.tree.query(embedding[0])
-            rtn = self.names[ind] + ' ' + str(dist)
+            #rtn = self.names[ind] + ' ' + str(dist)
+            if dist < threshold:
+                rtn = self.names[ind] + ' ' + str(dist)
+            else:
+                rtn = 'Face not in database'
         else:
             rtn = 'No face found'
 
