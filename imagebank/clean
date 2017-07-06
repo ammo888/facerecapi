@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo Deleting pycache folders and files
+find . | grep -E "(__pycache__|\.pyc|\.pyo$)" | xargs rm -rf
+
+echo Deleting migrations
+rm -rf api/migrations
+
+echo Deleting server database
+rm db.sqlite3
+
+echo Deleting stored images
+rm images/*
+
+echo Delete name and embedding database 
+rm -rf database
