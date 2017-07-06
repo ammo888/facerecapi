@@ -12,12 +12,14 @@ Enter project and create virtual environment
 ```
 $ cd facerecapi
 
+# facerecapi/
 $ python3 -m venv env   # python 3
 $ virtualenv env        # python 2
 ```
 
 Activate virtual environment and install dependencies
 ```
+# facerecapi/
 $ source env/bin/activate
 (env) pip install -r requirements.txt
 (env) cd imagebank
@@ -25,6 +27,7 @@ $ source env/bin/activate
 
 Setup project
 ```
+# facerecapi/imagebank/
 (env) unzip database.zip
 (env) python manage.py makemigrations api
 (env) python manage.py migrate
@@ -33,6 +36,7 @@ Setup project
 
 Run server with configuration
 ```
+# facerecapi/imagebank/
 (env) python manage.py runserver            # localhost:8000
 (env) python manage.py runserver ip:port    # custom ip:port
 ```
@@ -42,7 +46,7 @@ Run server with configuration
 ### Browser
 
 Django Rest Framework provides a nice browser API.
-(Example - server running on default ip:port):
+(e.g. server running on localhost):
 ```
 http://localhost:8000/              # API ROOT
 http://localhost:8000/users/        # USERS
@@ -50,20 +54,26 @@ http://localhost:8000/imagebank/    # IMAGES
 ```
   To post an image, navigate to `http://localhost:8000/imagebank/` and login with the user you created earlier.
 
-  Choose an image file to upload (one with a face in it!).
+  First, choose an image file to upload.
 
-  To try to identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
-  You should receive a response with the name and the euclidean distance between the input face embedding and the one in the database.
+  To identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
+
+  You should receive a response with the name and distance to closest embedding in database, e.g.:
   ```
   Joe_Smith 0.32845135197179404
   ```
-  To add a face to the database, do the same as above, but include a name in the Name field and POST. You should receive the following response:
+  To add a face to the database, include a name in the Name field and POST. You should receive a response, e.g.:
   ```
   Added Joe_Smith embedding
   ```
-  You can update an existing face embedding by POST-ing an image with the same name as one in the database, and should receive:
+  You can update an existing face embedding by POST-ing an image with the same name as one in the database. You should receive a response, e.g.:
   ```
   Updated Joe_Smith embedding
+  ```
+
+  If not face is found in the image, you should receive this response:
+  ```
+  No face found
   ```
 
 ### API
@@ -90,7 +100,4 @@ http://localhost:8000/imagebank/    # IMAGES
   http -a username:password -f POST ip:port/imagebank/ image@<IMAGE PATH> name=<NAME>
   ```
 
-  The responses to these requests are the same as in the **Browser** section. If no face is found, the API will respond with...
-  ```
-  No face found
-  ```
+  The responses to these HTTP requests are described in the **Browser** section above.
