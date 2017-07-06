@@ -3,12 +3,12 @@
 ## Get Started
 **The following instructions are for Unix shells**
 
-Clone from repository
+Clone repository
 ```
 $ git clone https://github.com/ammo888/facerecapi
 ```
 
-Enter project and create virtual environment
+Create virtual environment
 ```
 $ cd facerecapi
 
@@ -17,7 +17,7 @@ $ python3 -m venv env   # python 3
 $ virtualenv env        # python 2
 ```
 
-Activate virtual environment and install dependencies
+Install dependencies
 ```
 # facerecapi/
 $ source env/bin/activate
@@ -34,7 +34,7 @@ Setup project
 (env) python manage.py createsuperuser
 ```
 
-Run server with configuration
+Run server
 ```
 # facerecapi/imagebank/
 (env) python manage.py runserver            # localhost:8000
@@ -105,24 +105,24 @@ http://localhost:8000/imagebank/    # IMAGES
 ## Database
 
 ### Structure
-  Currently, the database is composed of two pickle files in `facerecapi/imagebank/database/`.
-  The faces stored are the first 1000 people from the aligned LFW face database, as reference.
+  Currently, the database is composed of two pickle files in `facerecapi/imagebank/database.zip`.
+  The faces stored are the first 1000 people from the aligned LFW face database.
 
   `names.pickle` holds a list of names in the database.
 
   `data.pickle` holds the corresponding 128-dimensional face embeddings
 
 ### Making own database
-  Included in under `facerecapi/` is `embed.py`.
+  Included in `facerecapi/` is `embed.py`.
 
-  Running the following command should create the `.pickle` files under `outfolder`.
+  Running the script should create the `.pickle` files in `outfolder`.
   ```
-  (env) python embed.py infolder outfolder
+  (env) python embed.py faces outfolder
   ```
 
-  The infolder should be structered as follows:
+  The `faces` folder should be structered as follows:
   ```
-  infolder/
+  faces/
     name1/
       pic1.jpg
       pic2.jpg
