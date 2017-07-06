@@ -30,7 +30,7 @@ class Faces(object):
         if embedding:
             dist, ind = self.tree.query(embedding[0])
             #rtn = self.names[ind] + ' ' + str(dist)
-            if dist < threshold:
+            if dist < self.threshold:
                 rtn = self.names[ind] + ' ' + str(dist)
             else:
                 rtn = 'Face not in database'
