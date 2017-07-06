@@ -139,6 +139,14 @@ http://localhost:8000/imagebank/    # IMAGES
 
   In `embed.py`, the variable `im_total` sets the max number of faces to embed, which is up to your choosing.
 
+## Face detection to API pipeline
+
+  `pipeline.py` processes images with none to multiple faces, and for every detected face, calls the API to identify.
+  
+  ```
+  (env) python pipeline.py path/to/image.jpg
+  ```
+
 ## Dependencies
 * numpy
 * scipy

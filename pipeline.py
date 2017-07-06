@@ -10,20 +10,17 @@ def main():
 
     im = Image.open(imagepath)
     locs = face_recognition.face_locations(np.array(im))
-    print('Input image:', im_name)
-    print(len(locs))
+    print(len(locs), 'faces detected')
     if locs:
         for loc in locs:
             face = im.crop((loc[3], loc[0], loc[1], loc[2]))    
             facebytes = io.BytesIO()
             face.save(facebytes, format='JPEG')
-            face.show()
+            # im.show()
             data = {'name':''}
-            files = {'image':(im_name, facebytes.getvalue())}
+            files = {'image': (im_name, facebytes.getvalue())}
             resp = requests.post('http://localhost:8000/imagebank/', auth=('admin', 'adminadmin'), data=data, files=files)
             print(resp.json())
-    else:
-        print('No face found')
 
 if __name__ == '__main__':
     main()
