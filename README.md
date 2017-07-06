@@ -1,5 +1,16 @@
 # facerecapi
 
+# Table of Contents
+1. [Get Started](#get-started)
+2. [Usage](#usage)
+    * [Browser](#browser)
+    * [API](#api)
+3. [Database](#database)
+    * [Structure](#structure)
+    * [Making own database](#making-own-database)
+4. [Face detection to API pipeline](#face-detection-to-api-pipeline)
+5. [Dependencies](#dependencies)
+
 ## Get Started
 **The following instructions are for Unix shells**
 
