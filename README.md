@@ -1,6 +1,6 @@
 # facerecapi
 
-# Table of Contents
+## Table of Contents
 1. [Get Started](#get-started)
 2. [Usage](#usage)
     * [Browser](#browser)
