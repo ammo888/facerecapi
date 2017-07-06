@@ -101,3 +101,51 @@ http://localhost:8000/imagebank/    # IMAGES
   ```
 
   The responses to these HTTP requests are described in the **Browser** section above.
+
+## Database
+
+### Structure
+  Currently, the database is composed of two pickle files in `facerecapi/imagebank/database/`.
+  The faces stored are the first 1000 people from the aligned LFW face database, as reference.
+
+  `names.pickle` holds a list of names in the database.
+
+  `data.pickle` holds the corresponding 128-dimensional face embeddings
+
+### Making own database
+  Included in under `facerecapi/` is `embed.py`.
+
+  Running the following command should create the `.pickle` files under `outfolder`.
+  ```
+  (env) python embed.py infolder outfolder
+  ```
+
+  The infolder should be structered as follows:
+  ```
+  infolder/
+    name1/
+      pic1.jpg
+      pic2.jpg
+      pic3.jpg
+      ...
+    name2/
+      pic1.jpg
+      pic2.jpg
+      ...
+    name3/
+      ...
+  ```
+  Each named folder should contain at least one image.
+
+  In `embed.py`, the variable `im_total` sets the max number of faces to embed, which is up to your choosing.
+
+## Dependencies
+* numpy
+* scipy
+* requests
+* httpie
+* Pillow
+* Django
+* Django Rest Framework
+* dlib
+* face-recognition
