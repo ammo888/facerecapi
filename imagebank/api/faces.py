@@ -26,7 +26,7 @@ class Faces(object):
         # cKDTree is used for finding closest embedding by L2 norm
         self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
         # The *currently* arbitrary threshold of embedding similarity
-        self.threshold = 0.43
+        self.threshold = 0.42
 
         # API endpoint for retreiving images
         self.imagebank = 'http://127.0.0.1:8000/imagebank/'
@@ -77,6 +77,7 @@ class Faces(object):
                 # Update existing embedding
                 self.embeddings[index] = (
                     self.embeddings[index] + embedding[0]) / 2
+                self.tree = spatial.cKDTree(self.embeddings)
                 rtn = 'Updated ' + name + ' embedding'
             # Name not in database
             else:
