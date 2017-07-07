@@ -1,4 +1,5 @@
 #!/bin/bash
+# Resets database and clears uploaded images
 
 echo Clearing database image entries and reset id counter
 sqlite3 db.sqlite3 "BEGIN; DELETE FROM api_image; UPDATE sqlite_sequence SET seq = 0 WHERE name='api_image'; COMMIT;"
