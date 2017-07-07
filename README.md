@@ -14,55 +14,57 @@
 ## Get Started
 **The following instructions are for Unix shells**
 
-Clone repository
-```
-$ git clone https://github.com/ammo888/facerecapi
-```
+  Clone repository
+  ```fish
+  $ git clone https://github.com/ammo888/facerecapi
+  ```
 
-Create virtual environment
-```
-$ cd facerecapi
+  Create virtual environment
+  ```fish
+  $ cd facerecapi
 
-# facerecapi/
-$ python3 -m venv env   # python 3
-$ virtualenv env        # python 2
-```
+  # facerecapi/
+  $ python3 -m venv env   # python 3
+  $ virtualenv env        # python 2
+  ```
 
-Install dependencies
-```
-# facerecapi/
-$ source env/bin/activate
-(env) pip install -r requirements.txt
-(env) cd imagebank
-```
+  Install dependencies
+  ```fish
+  # facerecapi/
+  $ source env/bin/activate
+  (env) pip install -r requirements.txt
+  (env) cd imagebank
+  ```
 
-Setup project
-```
-# facerecapi/imagebank/
-(env) unzip database.zip
-(env) python manage.py makemigrations api
-(env) python manage.py migrate
-(env) python manage.py createsuperuser
-```
+  Setup project
+  ```fish
+  # facerecapi/imagebank/
+  (env) unzip database.zip
+  (env) python manage.py makemigrations api
+  (env) python manage.py migrate
+  (env) python manage.py createsuperuser
+  ```
 
-Run server
-```
-# facerecapi/imagebank/
-(env) python manage.py runserver            # localhost:8000
-(env) python manage.py runserver ip:port    # custom ip:port
-```
+  Run server
+  ```fish
+  # facerecapi/imagebank/
+  (env) python manage.py runserver            # localhost:8000
+  (env) python manage.py runserver ip:port    # custom ip:port
+  ```
 
 ## Usage
 
 ### Browser
 
-Django Rest Framework provides a nice browser API.
-(e.g. server running on localhost):
-```
-http://localhost:8000/              # API ROOT
-http://localhost:8000/users/        # USERS
-http://localhost:8000/imagebank/    # IMAGES 
-```
+  Django Rest Framework provides a nice browser API.
+
+  Here are example api endpoints you can access (e.g. server running on localhost): 
+  ```
+  http://localhost:8000/              # API ROOT
+  http://localhost:8000/users/        # USERS
+  http://localhost:8000/imagebank/    # IMAGES 
+  ```
+  
   To post an image, navigate to `http://localhost:8000/imagebank/` and login with the user you created earlier.
 
   First, choose an image file to upload.
@@ -77,7 +79,7 @@ http://localhost:8000/imagebank/    # IMAGES
   ```
   Face not in database
   ```
-  
+
   To add a face to the database, include a name in the Name field and POST. You should receive a response, e.g.:
   ```
   Added Joe_Smith embedding
@@ -107,12 +109,12 @@ http://localhost:8000/imagebank/    # IMAGES
   ```
 
   To identify a face:
-  ```
+  ```fish
   http -a username:password -f POST ip:port/imagebank/ image@<IMAGE PATH>
   ```
 
   To add/update face:
-  ```
+  ```fish
   http -a username:password -f POST ip:port/imagebank/ image@<IMAGE PATH> name=<NAME>
   ```
 
@@ -132,7 +134,7 @@ http://localhost:8000/imagebank/    # IMAGES
   Included in `facerecapi/` is `embed.py`.
 
   Running the script should create the `.pickle` files in `outfolder`.
-  ```
+  ```fish
   (env) python embed.py faces outfolder
   ```
 
@@ -159,7 +161,7 @@ http://localhost:8000/imagebank/    # IMAGES
 
   `pipeline.py` processes images with none to multiple faces, and for every detected face, calls the API to identify.
   
-  ```
+  ```fish
   (env) python pipeline.py path/to/image.jpg
   ```
 
