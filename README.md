@@ -73,6 +73,11 @@ http://localhost:8000/imagebank/    # IMAGES
   ```
   Joe_Smith 0.32845135197179404
   ```
+  If the given face is determined not to be in the database, you should receive this response:
+  ```
+  Face not in database
+  ```
+  
   To add a face to the database, include a name in the Name field and POST. You should receive a response, e.g.:
   ```
   Added Joe_Smith embedding
@@ -82,7 +87,7 @@ http://localhost:8000/imagebank/    # IMAGES
   Updated Joe_Smith embedding
   ```
 
-  If not face is found in the image, you should receive this response:
+  If no face is found in the image, you should receive this response:
   ```
   No face found
   ```
