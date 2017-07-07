@@ -1,3 +1,8 @@
+# Ignore project created files
+imagebank/api/migrations
+imagebank/database
+imagebank/db.sqlite3
+imagebank/images
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
