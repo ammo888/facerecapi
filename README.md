@@ -165,6 +165,14 @@
   (env) python pipeline.py path/to/image.jpg
   ```
 
+## Camera input
+  
+  `camera.py` does what `pipeline.py` does but instead, uses frames from the primary camera on your computer as input. Simply:
+
+  ```fish
+  (env) python camera.py
+  ```
+
 ## Dependencies
 * numpy
 * scipy
@@ -175,3 +183,4 @@
 * Django Rest Framework
 * dlib
 * face-recognition
+* opencv
