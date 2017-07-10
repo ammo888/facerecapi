@@ -14,4 +14,4 @@ echo Deleting stored images
 rm images/*
 
 echo Deleting name and embedding database 
-rm -rf database
+rm -rf newdb 

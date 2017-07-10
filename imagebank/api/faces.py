@@ -3,6 +3,7 @@ import io
 import sys
 import time
 import pickle
+import hashlib
 import requests
 import threading
 import numpy as np
@@ -17,14 +18,16 @@ class Faces(object):
 
     def __init__(self):
         # Open .pickle files - our database
-        self.database = 'database/'
-        with open(os.path.join(self.database, 'names.pickle'), 'rb') as handle:
-            self.names = pickle.load(handle)
+        self.database = 'newdb/'
+        with open(os.path.join(self.database, 'hash.pickle'), 'rb') as handle:
+            self.hashes = pickle.load(handle)
         with open(os.path.join(self.database, 'data.pickle'), 'rb') as handle:
             self.embeddings = pickle.load(handle)
 
         # cKDTree is used for finding closest embedding by L2 norm
-        self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
+        if self.embeddings:
+            self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
+
         # The *currently* arbitrary threshold of embedding similarity
         self.threshold = 0.42
 
@@ -44,10 +47,13 @@ class Faces(object):
         # If embedding is found
         if embedding:
             # Find nearest embedding in database
-            dist, ind = self.tree.query(embedding[0])
+            if hasattr(self, 'tree'):
+                dist, ind = self.tree.query(embedding[0])
+            else:
+                dist, ind = 10, 0
             # If that embedding is close enough, return the embedding info
             if dist < self.threshold:
-                rtn = self.names[ind] + ' ' + str(dist)
+                rtn = self.hashes[ind] + ' ' + str(dist)
             # Else, the face is not in the database
             else:
                 rtn = 'Face not in database'
@@ -61,8 +67,17 @@ class Faces(object):
         """Add/update face to database"""
 
         # Fetch name and data from API endpoints
-        name = requests.get(self.imagebank + str(id) + '/').json()['name']
+        userdata = requests.get(self.imagebank + str(id) + '/').json()
+        name = userdata['name']
+        gender = userdata['gender']
         data = requests.get(self.imagebank + str(id) + '/data/', stream=True)
+
+        # User hash
+        userhash = hashlib.sha256()
+        userhash.update(name.encode('utf-8'))
+        userhash.update(gender.encode('utf-8'))
+        userhash = userhash.hexdigest()
+
         # Convert to numpy array
         array = np.array(Image.open(io.BytesIO(data.raw.read())))
         # Obtain face embedding
@@ -70,23 +85,24 @@ class Faces(object):
 
         # If embedding is found
         if embedding:
-            # Find name already in database
-            if name in self.names:
+            # Find user hash already in database
+            if userhash in self.hashes:
                 # Find index
-                index = self.names.index(name)
+                index = self.hashes.index(userhash)
                 # Update existing embedding
                 self.embeddings[index] = (
                     self.embeddings[index] + embedding[0]) / 2
                 self.tree = spatial.cKDTree(self.embeddings)
-                rtn = 'Updated ' + name + ' embedding'
+                rtn = 'Updated ' + userhash + ' embedding'
             # Name not in database
             else:
-                # Add name and data to database
-                self.names.append(name)
+                # Add hasb and data to database
+                self.hashes.append(userhash)
                 self.embeddings.append(embedding[0])
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
-                rtn = 'Added ' + name + ' embedding'
+                rtn = 'Added ' + userhash + ' embedding'
+
         # No face found in image
         else:
             rtn = 'No face found'
@@ -96,12 +112,12 @@ class Faces(object):
     def save(self):
         """Periodically pickle current database and save"""
 
-        threading.Timer(10, self.save).start()
-        with open(os.path.join(self.database, 'names.pickle'), 'wb') as handle:
-            pickle.dump(self.names, handle, protocol=2)
+        # threading.Timer(10, self.save).start()
+        # with open(os.path.join(self.database, 'hash.pickle'), 'wb') as handle:
+        #     pickle.dump(self.hashes, handle, protocol=2)
 
-        with open(os.path.join(self.database, 'data.pickle'), 'wb') as handle:
-            pickle.dump(self.embeddings, handle, protocol=2)
+        # with open(os.path.join(self.database, 'data.pickle'), 'wb') as handle:
+        #     pickle.dump(self.embeddings, handle, protocol=2)
 
         now = time.strftime('[%d/%b/%Y %H:%M:%S]')
         print(now, 'Database saved')

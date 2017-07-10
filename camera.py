@@ -26,9 +26,10 @@ def main():
                 auth = ('admin', 'adminadmin')
                 data = {'name': ''}
                 files = {'image': ('frame', facebytes.getvalue())}
-                resp = requests.post('http://localhost:8000/imagebank/', auth=auth, data=data, files=files)
+                resp = requests.post('http://127.0.0.1:8000/imagebank/, auth=auth, data=data, files=files')
                 print(resp.json())
         print()
 
 if __name__ == '__main__':
     main()
+
