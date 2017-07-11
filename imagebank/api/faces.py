@@ -66,7 +66,8 @@ class Faces(object):
                 self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
                 user_data = self.c.fetchone()
 
-                rtn = [{'name': user_data[0], 'gender': user_data[1]}]
+                keys = ('name', 'gender')
+                rtn = [dict(zip(keys, user_data))]
             # Else, the face is not in the database
             else:
                 rtn = ['Face not in database']
@@ -108,7 +109,8 @@ class Faces(object):
                     self.embeddings[index] + embedding[0]) / 2
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
-                rtn = ['Updated ' + user_hash + ' embedding']
+
+                rtn = [' '.join(('Updated', user_hash, 'embedding'))]
             # Name not in database
             else:
                 # Add hasb and data to database
@@ -122,11 +124,11 @@ class Faces(object):
                 self.c.execute('INSERT INTO users VALUES (?,?,?)', user_info)
                 self.conn.commit()   
 
-                rtn = ['Added ' + user_hash + ' embedding']
-
+                rtn = [' '.join(('Added', user_hash, 'embedding'))]
+ 
         # No face found in image
         else:
-            rtn = 'No face found'
+            rtn = ['No face found']
 
         return rtn
 
