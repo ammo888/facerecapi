@@ -78,6 +78,7 @@
   ```
   [
     {
+      "distance": "0.3894323428347783"
       "gender": "M",
       "name": "Joe Smith"
     }
