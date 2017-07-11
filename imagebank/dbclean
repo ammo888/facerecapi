@@ -5,7 +5,7 @@ echo Clearing database image entries and reset id counter
 sqlite3 db.sqlite3 "BEGIN; DELETE FROM api_image; UPDATE sqlite_sequence SET seq = 0 WHERE name='api_image'; COMMIT;"
 
 echo Clearing user database
-sqlite3 users.db "BEGIN; TRUNCATE users; COMMIT;"
+sqlite3 users.db "BEGIN; DELETE FROM users; COMMIT;"
 
 echo Deleting stored images
 rm images/*
