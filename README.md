@@ -74,13 +74,14 @@
 
   To identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
   
-  You should receive a response containing the user info, e.g.:
+  You should receive a response containing the user info, like below. Distance is the L2 norm between the input face embedding and the one in the database - the lower the more confident the API is about this recognition.
+
   ```
   [
     {
-      "distance": "0.3894323428347783"
+      "name": "Joe Smith",
       "gender": "M",
-      "name": "Joe Smith"
+      "distance": "0.3894323428347783"
     }
   ]
   ```
