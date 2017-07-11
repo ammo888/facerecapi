@@ -65,10 +65,11 @@ class Faces(object):
                 # SQL fetch user data
                 self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
                 user_data = self.c.fetchone()
-
-                keys = ('name', 'gender', 'distance')
-                rtn = [dict(zip(keys, user_data + (dist,)))]
-            # Else, the face is not in the database
+                if user_data:
+                    keys = ('name', 'gender', 'distance')
+                    rtn = [dict(zip(keys, user_data + (dist,)))]
+                else:
+                    rtn = ['Face not in database']
             else:
                 rtn = ['Face not in database']
         # No face found in image
