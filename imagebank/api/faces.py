@@ -4,6 +4,7 @@ import sys
 import time
 import pickle
 import hashlib
+import sqlite3
 import requests
 import threading
 import numpy as np
@@ -18,13 +19,14 @@ class Faces(object):
 
     def __init__(self):
         # Open .pickle files - our database
-        self.database = 'newdb/'
+        self.database = 'database/'
         with open(os.path.join(self.database, 'hash.pickle'), 'rb') as handle:
             self.hashes = pickle.load(handle)
         with open(os.path.join(self.database, 'data.pickle'), 'rb') as handle:
             self.embeddings = pickle.load(handle)
 
-        # cKDTree is used for finding closest embedding by L2 norm
+        # cKDTree is used for finding nearest embedding by L2 norm
+        # Only create tree if database isn't empty
         if self.embeddings:
             self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
 
@@ -33,6 +35,10 @@ class Faces(object):
 
         # API endpoint for retreiving images
         self.imagebank = 'http://127.0.0.1:8000/imagebank/'
+
+        # User database
+        self.conn = sqlite3.connect('users.db', check_same_thread=False)
+        self.c = self.conn.cursor()
 
     def identify(self, id):
         """Identify input face using the database"""
@@ -46,20 +52,27 @@ class Faces(object):
 
         # If embedding is found
         if embedding:
-            # Find nearest embedding in database
+            # Find nearest embedding in database, assuming database isn't empty
             if hasattr(self, 'tree'):
-                dist, ind = self.tree.query(embedding[0])
+                dist, index = self.tree.query(embedding[0])
             else:
-                dist, ind = 10, 0
-            # If that embedding is close enough, return the embedding info
+                dist, index = self.threshold, 0
+
+            # If that embedding is close enough, access user db by hash
             if dist < self.threshold:
-                rtn = self.hashes[ind] + ' ' + str(dist)
+                # Obtain user hash
+                user_hash = (self.hashes[index],)
+                # SQL fetch user data
+                self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
+                user_data = self.c.fetchone()
+
+                rtn = [{'name': user_data[0], 'gender': user_data[1]}]
             # Else, the face is not in the database
             else:
-                rtn = 'Face not in database'
+                rtn = ['Face not in database']
         # No face found in image
         else:
-            rtn = 'No face found'
+            rtn = ['No face found']
 
         return rtn
 
@@ -67,16 +80,16 @@ class Faces(object):
         """Add/update face to database"""
 
         # Fetch name and data from API endpoints
-        userdata = requests.get(self.imagebank + str(id) + '/').json()
-        name = userdata['name']
-        gender = userdata['gender']
+        user_data = requests.get(self.imagebank + str(id) + '/').json()
+        name = user_data['name']
+        gender = user_data['gender']
         data = requests.get(self.imagebank + str(id) + '/data/', stream=True)
 
-        # User hash
-        userhash = hashlib.sha256()
-        userhash.update(name.encode('utf-8'))
-        userhash.update(gender.encode('utf-8'))
-        userhash = userhash.hexdigest()
+        # User data hash
+        user_hash = hashlib.sha256()
+        user_hash.update(name.encode('utf-8'))
+        user_hash.update(gender.encode('utf-8'))
+        user_hash = user_hash.hexdigest()
 
         # Convert to numpy array
         array = np.array(Image.open(io.BytesIO(data.raw.read())))
@@ -85,23 +98,31 @@ class Faces(object):
 
         # If embedding is found
         if embedding:
-            # Find user hash already in database
-            if userhash in self.hashes:
+            # Find user if hash already in database
+            if user_hash in self.hashes:
                 # Find index
-                index = self.hashes.index(userhash)
+                index = self.hashes.index(user_hash)
                 # Update existing embedding
+                # The methodology of updating an existing embedding isn't concrete
                 self.embeddings[index] = (
                     self.embeddings[index] + embedding[0]) / 2
+                # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
-                rtn = 'Updated ' + userhash + ' embedding'
+                rtn = ['Updated ' + user_hash + ' embedding']
             # Name not in database
             else:
                 # Add hasb and data to database
-                self.hashes.append(userhash)
+                self.hashes.append(user_hash)
                 self.embeddings.append(embedding[0])
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
-                rtn = 'Added ' + userhash + ' embedding'
+
+                # Add user to user db
+                user_info = (user_hash, name, gender)
+                self.c.execute('INSERT INTO users VALUES (?,?,?)', user_info)
+                self.conn.commit()   
+
+                rtn = ['Added ' + user_hash + ' embedding']
 
         # No face found in image
         else:
@@ -112,12 +133,12 @@ class Faces(object):
     def save(self):
         """Periodically pickle current database and save"""
 
-        # threading.Timer(10, self.save).start()
-        # with open(os.path.join(self.database, 'hash.pickle'), 'wb') as handle:
-        #     pickle.dump(self.hashes, handle, protocol=2)
+        threading.Timer(10, self.save).start()
+        with open(os.path.join(self.database, 'hash.pickle'), 'wb') as handle:
+            pickle.dump(self.hashes, handle, protocol=2)
 
-        # with open(os.path.join(self.database, 'data.pickle'), 'wb') as handle:
-        #     pickle.dump(self.embeddings, handle, protocol=2)
+        with open(os.path.join(self.database, 'data.pickle'), 'wb') as handle:
+            pickle.dump(self.embeddings, handle, protocol=2)
 
         now = time.strftime('[%d/%b/%Y %H:%M:%S]')
         print(now, 'Database saved')

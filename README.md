@@ -7,7 +7,7 @@
     * [API](#api)
 3. [Database](#database)
     * [Structure](#structure)
-    * [Making own database](#making-own-database)
+    <!--* [Making own database](#making-own-database) -->
 4. [Face detection to API pipeline](#face-detection-to-api-pipeline)
 5. [Dependencies](#dependencies)
 
@@ -52,6 +52,10 @@
   (env) python manage.py runserver ip:port    # custom ip:port
   ```
 
+  Running a custom ip:port requires adding that ip address to the `ALLOWED_HOSTS` list in `facerecapi/imagebank/imagebank/settings.py`
+
+  Also, you would need to modify the ip:port of `self.imagebank` in `facerecapi/imagebank/api/faces.py`
+
 ## Usage
 
 ### Browser
@@ -71,27 +75,44 @@
 
   To identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
 
-  You should receive a response with the name and distance to closest embedding in database, e.g.:
+<!--
+You should receive a response with the name and distance to closest embedding in database, e.g.:
+-->
+  
+  You should receive a response containing the user info, e.g.:
   ```
-  Joe_Smith 0.32845135197179404
+  [
+    {
+      "gender": "M",
+      "name": "Joe Smith"
+    }
+  ]
   ```
   If the given face is determined not to be in the database, you should receive this response:
   ```
-  Face not in database
+  [
+    "Face not in database"
+  ]
   ```
 
   To add a face to the database, include a name in the Name field and POST. You should receive a response, e.g.:
   ```
-  Added Joe_Smith embedding
+  [
+    "Added <user hash> embedding"
+  ]
   ```
   You can update an existing face embedding by POST-ing an image with the same name as one in the database. You should receive a response, e.g.:
   ```
-  Updated Joe_Smith embedding
+  [
+    "Updated <user hash> embedding"
+  ]
   ```
 
   If no face is found in the image, you should receive this response:
   ```
-  No face found
+  [
+    "No face found"
+  ]
   ```
 
 ### API
@@ -115,7 +136,7 @@
 
   To add/update face:
   ```fish
-  http -a username:password -f POST ip:port/imagebank/ image@<IMAGE PATH> name=<NAME>
+  http -a username:password -f POST ip:port/imagebank/ image@<IMAGE PATH> name=<NAME> gender=<M or F>
   ```
 
   The responses to these HTTP requests are described in the **Browser** section above.
@@ -126,10 +147,11 @@
   Currently, the database is composed of two pickle files in `facerecapi/imagebank/database.zip`.
   The faces stored are the first 1000 people from the aligned LFW face database.
 
-  `names.pickle` holds a list of names in the database.
+  `hash.pickle` holds a list of hashes in the database.
 
   `data.pickle` holds the corresponding 128-dimensional face embeddings
 
+<!--
 ### Making own database
   Included in `facerecapi/` is `embed.py`.
 
@@ -157,12 +179,13 @@
 
   In `embed.py`, the variable `im_total` sets the max number of faces to embed, which is up to your choosing.
 
+-->
 ## Face detection to API pipeline
 
   `pipeline.py` processes images with none to multiple faces, and for every detected face, calls the API to identify.
   
   ```fish
-  (env) python pipeline.py path/to/image.jpg
+  (env) python pipeline.py ip:port path/to/image.jpg
   ```
 
 ## Camera input
@@ -170,7 +193,7 @@
   `camera.py` does what `pipeline.py` does but instead, uses frames from the primary camera on your computer as input. Simply:
 
   ```fish
-  (env) python camera.py
+  (env) python camera.py ip:port
   ```
 
 ## Dependencies

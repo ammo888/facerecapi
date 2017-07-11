@@ -11,7 +11,8 @@ def main():
     """Face detection to API pipeline"""
 
     # Get image path
-    imagepath = sys.argv[1]
+    ipport = sys.argv[1]
+    imagepath = sys.argv[2]
     # Get image name
     im_name = imagepath.split('/')[-1]
 
@@ -33,7 +34,7 @@ def main():
             files = {'image': (im_name, facebytes.getvalue())}
             auth = ('admin', 'adminadmin')
             resp = requests.post(
-                'http://localhost:8000/imagebank/', auth=auth, data=data, files=files)
+                'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
             print(resp.json())
 
 if __name__ == '__main__':
