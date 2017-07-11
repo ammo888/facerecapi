@@ -12,19 +12,18 @@ def main():
 
     video_capture = cv2.VideoCapture(0)
     framecount = 0
-    while True:
+    while framecount < 30:
         framecount += 1
-        time.sleep(3)
+        #time.sleep(0.5)
         ret, frame = video_capture.read()
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         im = Image.fromarray(small_frame)
-        im.show()
+        #im.show()
         locs = face_recognition.face_locations(small_frame)
         print('Frame', framecount)
         if locs:
             for loc in locs:
                 face = im.crop((loc[3], loc[0], loc[1], loc[2]))
-                # face.show()
                 facebytes = io.BytesIO()
                 face.save(facebytes, format='JPEG')
                 auth = ('admin', 'adminadmin')

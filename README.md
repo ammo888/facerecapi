@@ -7,7 +7,6 @@
     * [API](#api)
 3. [Database](#database)
     * [Structure](#structure)
-    <!--* [Making own database](#making-own-database) -->
 4. [Face detection to API pipeline](#face-detection-to-api-pipeline)
 5. [Dependencies](#dependencies)
 
@@ -51,7 +50,7 @@
   (env) python manage.py runserver            # localhost:8000
   (env) python manage.py runserver ip:port    # custom ip:port
   ```
-
+ 
   Running a custom ip:port requires adding that ip address to the `ALLOWED_HOSTS` list in `facerecapi/imagebank/imagebank/settings.py`
 
   Also, you would need to modify the ip:port of `self.imagebank` in `facerecapi/imagebank/api/faces.py`
@@ -74,10 +73,6 @@
   First, choose an image file to upload.
 
   To identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
-
-<!--
-You should receive a response with the name and distance to closest embedding in database, e.g.:
--->
   
   You should receive a response containing the user info, e.g.:
   ```

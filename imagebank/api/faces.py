@@ -31,7 +31,7 @@ class Faces(object):
             self.tree = spatial.cKDTree(self.embeddings, leafsize=100)
 
         # The *currently* arbitrary threshold of embedding similarity
-        self.threshold = 0.42
+        self.threshold = 0.5
 
         # API endpoint for retreiving images
         self.imagebank = 'http://127.0.0.1:8000/imagebank/'
@@ -66,8 +66,8 @@ class Faces(object):
                 self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
                 user_data = self.c.fetchone()
 
-                keys = ('name', 'gender')
-                rtn = [dict(zip(keys, user_data))]
+                keys = ('name', 'gender', 'distance')
+                rtn = [dict(zip(keys, user_data + (dist,)))]
             # Else, the face is not in the database
             else:
                 rtn = ['Face not in database']
