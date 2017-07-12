@@ -9,7 +9,7 @@
     * [Structure](#structure)
 4. [Face detection to API pipeline](#face-detection-to-api-pipeline)
 5. [Dependencies](#dependencies)
-
+6. [License](#licence)
 ## Get Started
 **The following instructions are for Unix shells**
 
@@ -204,3 +204,7 @@
 * dlib
 * face-recognition
 * opencv
+
+## License
+
+Apache-2.0
