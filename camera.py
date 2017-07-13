@@ -29,11 +29,11 @@ def main():
                     'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
                 print(resp.json())
             
-                cv2.rectangle(frame, (4*left, 4*top), (4*right, 4*bottom), (255,0,0), 2)
+                cv2.rectangle(frame, (4*left, 4*top), (4*right, 4*bottom), (0,0,255), 2)
                 if type(resp.json()) is dict:
-                    cv2.putText(frame, resp.json()['name'], (4*left+6, 4*bottom-6), font, 1.0, (255,255,255), 1)
+                    cv2.putText(frame, resp.json()['name'], (4*left+6, 4*bottom-6), font, 1.0, (255,255,0), 1)
                 else:
-                    cv2.putText(frame, resp.json()[0], (4*left+6, 4*bottom-6), font, 1.0, (255,255,255), 1)
+                    cv2.putText(frame, resp.json()[0], (4*left+6, 4*bottom-6), font, 1.0, (255,0,0), 1)
         print()
         im = Image.fromarray(frame)
         im.show()
