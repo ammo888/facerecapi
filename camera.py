@@ -1,9 +1,6 @@
-import io
 import sys
 import cv2
-import time
 import requests
-from PIL import Image
 import face_recognition
 
 
@@ -14,23 +11,22 @@ def main():
     framecount = 0
     while True:
         framecount += 1
-        ret, frame = video_capture.read()
+        _, frame = video_capture.read()
         frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-        im = Image.fromarray(frame)
         locs = face_recognition.face_locations(frame)
+
         print('Frame', framecount)
         if locs:
-            for loc in locs:
-                face = im.crop((loc[3], loc[0], loc[1], loc[2]))
-                facebytes = io.BytesIO()
-                face.save(facebytes, format='JPEG')
+            for (top, right, bottom, left) in locs:
+                face = frame[top:bottom, left:right]
+                facebytes = bytearray(cv2.imencode('.jpg', face)[1].tostring())
                 auth = ('admin', 'adminadmin')
                 data = {'name': ''}
-                files = {'image': ('frame', facebytes.getvalue())}
+                files = {'image': ('frame', facebytes)}
                 resp = requests.post(
                     'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
                 print(resp.json())
-        print()        
+        print()      
 
 if __name__ == '__main__':
     main()

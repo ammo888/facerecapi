@@ -10,6 +10,7 @@
 4. [Face detection to API pipeline](#face-detection-to-api-pipeline)
 5. [Dependencies](#dependencies)
 6. [License](#licence)
+
 ## Get Started
 **The following instructions are for Unix shells**
 
@@ -77,13 +78,11 @@
   You should receive a response containing the user info, like below. Distance is the L2 norm between the input face embedding and the one in the database - the lower the more confident the API is about this recognition.
 
   ```
-  [
-    {
-      "name": "Joe Smith",
-      "gender": "M",
-      "distance": "0.3894323428347783"
-    }
-  ]
+  {
+    "name": "Joe Smith",
+    "gender": "M",
+    "distance": "0.3894323428347783"
+  }
   ```
   If the given face is determined not to be in the database, you should receive this response:
   ```
@@ -198,7 +197,7 @@
 * scipy
 * requests
 * httpie
-* Pillow
+* Pillow-SIMD
 * Django
 * Django Rest Framework
 * dlib

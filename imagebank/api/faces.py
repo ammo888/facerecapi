@@ -67,7 +67,7 @@ class Faces(object):
                 user_data = self.c.fetchone()
                 if user_data:
                     keys = ('name', 'gender', 'distance')
-                    rtn = [dict(zip(keys, user_data + (dist,)))]
+                    rtn = dict(zip(keys, user_data + (dist,)))
                 else:
                     rtn = ['Face not in database']
             else:
