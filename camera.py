@@ -21,7 +21,7 @@ def main():
         if locs:
             for (top, right, bottom, left) in locs:
                 face = small_frame[top:bottom, left:right]
-                facebytes = bytearray(cv2.imencode('.jpg', face)[1].tostring())
+                facebytes = cv2.imencode('.jpg', face)[1].tobytes()
                 auth = ('admin', 'adminadmin')
                 data = {'name': '', 'gender': ''}
                 files = {'image': ('frame', facebytes)}
