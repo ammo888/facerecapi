@@ -28,11 +28,12 @@ def main():
             face = im.crop((loc[3], loc[0], loc[1], loc[2]))
             # Get bytes from face image
             facebytes = io.BytesIO()
-            face.save(facebytes, format='JPEG')
+            face.save(facebytes, format='jpeg')
             # Send a HTTP POST request and print response
+            auth = ('admin', 'adminadmin')
             data = {'name': ''}
             files = {'image': (im_name, facebytes.getvalue())}
-            auth = ('admin', 'adminadmin')
+
             resp = requests.post(
                 'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
             print(resp.json())
