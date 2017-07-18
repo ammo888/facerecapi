@@ -63,7 +63,7 @@ class Faces(object):
                 else:
                     dist, index = self.threshold, 0
 
-                no_face = ('Face not in database', '', '', locs[i])
+                no_face = ('Face not in database', None, None, locs[i])
                 # If that embedding is close enough, access user db by hash
                 if dist < self.threshold:
                     # Obtain user hash

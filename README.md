@@ -75,19 +75,30 @@
 
   To identify the faces from the existing database, DO NOT type anything in the Name field, and POST.
   
-  You should receive a response containing the user info, like below. Distance is the L2 norm between the input face embedding and the one in the database - the lower the more confident the API is about this recognition.
+  You should receive a response containing the user info for each face detected, like below.
+  Distance is the L2 norm between the input face embedding and the one in the database - the lower the more confident the API is about this recognition. Location represents where the face was detected within the input image.
 
   ```
-  {
-    "name": "Joe Smith",
-    "gender": "M",
-    "distance": "0.3894323428347783"
-  }
+  [
+    {
+      'name': 'Joe Smith',
+      'gender': 'M',
+      'distance': 0.3894323428347783
+      'location': [0, 86, 86, 0]
+    },
+    ...
+  ]
   ```
   If the given face is determined not to be in the database, you should receive this response:
   ```
   [
-    "Face not in database"
+    {
+      'name': 'Face not found in database',
+      'gender': None,
+      'distance': None,
+      'location': [0, 86, 86, 0]
+    },
+    ...
   ]
   ```
 
@@ -178,7 +189,7 @@
 -->
 ## Face detection to API pipeline
 
-  `pipeline.py` processes images with none to multiple faces, and for every detected face, calls the API to identify.
+  `pipeline.py` processes images with none to multiple faces, using the API to return user data and face locations to label faces in the image.
   
   ```fish
   (env) python pipeline.py ip:port path/to/image.jpg
@@ -203,6 +214,7 @@
 * dlib
 * face-recognition
 * opencv
+* matplotlib
 
 ## License
 
