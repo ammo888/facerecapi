@@ -2,7 +2,7 @@ import io
 import sys
 import requests
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 import face_recognition
 
@@ -10,33 +10,44 @@ import face_recognition
 def main():
     """Face detection to API pipeline"""
 
-    # Get image path
+    # Get image path and name
     ipport = sys.argv[1]
     imagepath = sys.argv[2]
-    # Get image name
-    im_name = imagepath.split('/')[-1]
+    imname = imagepath.split('/')[-1]
 
-    # Obtain face locations
+    # Convert image to bytes
     im = Image.open(imagepath)
-    locs = face_recognition.face_locations(np.array(im))
-    print(len(locs), 'faces detected')
-    # If any faces found
-    if locs:
-        # Go through each face
-        for loc in locs:
-            # Crop face
-            face = im.crop((loc[3], loc[0], loc[1], loc[2]))
-            # Get bytes from face image
-            facebytes = io.BytesIO()
-            face.save(facebytes, format='jpeg')
-            # Send a HTTP POST request and print response
-            auth = ('admin', 'adminadmin')
-            data = {'name': ''}
-            files = {'image': (im_name, facebytes.getvalue())}
+    imbytes = io.BytesIO()
+    im.save(imbytes, format='jpeg')
 
-            resp = requests.post(
-                'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
-            print(resp.json())
+    # Send a HTTP POST request and print response
+    auth = ('admin', 'adminadmin')
+    data = {'name': ''}
+    files = {'image': (imname, imbytes.getvalue())}
+    resp = requests.post(
+        'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
+    print(len(resp.json()), 'faces detected')
+    for face in resp.json():
+        print(face)
+
+    # Draw detected faces
+    for face in resp.json():
+        drawInfo(im, face['location'], face['name'])
+    im.show()
+
+def drawInfo(im, locs, text):
+    draw = ImageDraw.Draw(im)
+    (top, right, bottom, left) = locs
+    # Bounding box
+    draw.rectangle(((left, top), (right, bottom)), outline='red')
+    # Black border
+    draw.text((left-1, bottom-1), text, fill='black')
+    draw.text((left+1, bottom-1), text, fill='black')
+    draw.text((left-1, bottom+1), text, fill='black')
+    draw.text((left+1, bottom+1), text, fill='black')
+    # Text
+    draw.text((left, bottom), text, fill='white')
+    del draw
 
 if __name__ == '__main__':
     main()

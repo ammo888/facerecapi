@@ -48,33 +48,38 @@ class Faces(object):
         # Convert to numpy array
         array = np.array(Image.open(io.BytesIO(data.raw.read())))
         # Obtain face embedding
-        embedding = face_recognition.face_encodings(array)
+        locs = face_recognition.face_locations(array)
+        embeddings = face_recognition.face_encodings(array, locs)
 
-        # If embedding is found
-        if embedding:
-            # Find nearest embedding in database, assuming database isn't empty
-            if hasattr(self, 'tree'):
-                dist, index = self.tree.query(embedding[0])
-            else:
-                dist, index = self.threshold, 0
+        rtn = []
 
-            # If that embedding is close enough, access user db by hash
-            if dist < self.threshold:
-                # Obtain user hash
-                user_hash = (self.hashes[index],)
-                # SQL fetch user data
-                self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
-                user_data = self.c.fetchone()
-                if user_data:
-                    keys = ('name', 'gender', 'distance')
-                    rtn = dict(zip(keys, user_data + (dist,)))
+        keys = ('name', 'gender', 'distance', 'location')
+        # If embeddings are found
+        if embeddings:
+            for i, embedding in enumerate(embeddings):
+                # Find nearest embedding in database, assuming database isn't empty
+                if hasattr(self, 'tree'):
+                    dist, index = self.tree.query(embedding)
                 else:
-                    rtn = ['Face not in database']
-            else:
-                rtn = ['Face not in database']
+                    dist, index = self.threshold, 0
+
+                no_face = ('Face not in database', '', '', locs[i])
+                # If that embedding is close enough, access user db by hash
+                if dist < self.threshold:
+                    # Obtain user hash
+                    user_hash = (self.hashes[index],)
+                    # SQL fetch user data
+                    self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
+                    user_data = self.c.fetchone()
+                    if user_data:
+                        rtn.append(dict(zip(keys, user_data + (dist,) + (locs[i],))))
+                    else:
+                        rtn.append(dict(zip(keys, no_face)))
+                else:
+                    rtn.append(dict(zip(keys, no_face)))
         # No face found in image
         else:
-            rtn = ['No face found']
+            rtn.append('No faces found')
 
         return rtn
 
