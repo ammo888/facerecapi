@@ -1,21 +1,23 @@
+'''Definition for Faces class that handles the face recognition
+part of the API'''
 import os
 import io
-import sys
 import time
 import pickle
 import hashlib
 import sqlite3
-import requests
 import threading
+import requests
 import numpy as np
 from PIL import Image
 from scipy import spatial
-from functools import wraps
 
 import face_recognition
 
 
 class Faces(object):
+    '''Class that handles identifying faces in input images and updating
+    the user database.'''
 
     def __init__(self):
         # Open .pickle files - our database
@@ -38,13 +40,13 @@ class Faces(object):
 
         # User database
         self.conn = sqlite3.connect('users.db', check_same_thread=False)
-        self.c = self.conn.cursor()
+        self.cursor = self.conn.cursor()
 
-    def identify(self, id):
+    def identify(self, post_id):
         """Identify input face using the database"""
 
         # Fetch raw data from API endpoint
-        data = requests.get(self.imagebank + str(id) + '/data/', stream=True)
+        data = requests.get(self.imagebank + str(post_id) + '/data/', stream=True)
         # Convert to numpy array
         array = np.array(Image.open(io.BytesIO(data.raw.read())))
         # Obtain face embedding
@@ -69,8 +71,8 @@ class Faces(object):
                     # Obtain user hash
                     user_hash = (self.hashes[index],)
                     # SQL fetch user data
-                    self.c.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
-                    user_data = self.c.fetchone()
+                    self.cursor.execute('SELECT name, gender FROM users WHERE hash=?', user_hash)
+                    user_data = self.cursor.fetchone()
                     if user_data:
                         rtn.append(dict(zip(keys, user_data + (dist,) + (locs[i],))))
                     else:
@@ -83,20 +85,20 @@ class Faces(object):
 
         return rtn
 
-    def update(self, id):
+    def update(self, post_id):
         """Add/update face to database"""
 
         # Fetch name and data from API endpoints
-        user_data = requests.get(self.imagebank + str(id) + '/').json()
+        user_data = requests.get(self.imagebank + str(post_id) + '/').json()
         name = user_data['name']
         gender = user_data['gender']
-        data = requests.get(self.imagebank + str(id) + '/data/', stream=True)
+        data = requests.get(self.imagebank + str(post_id) + '/data/', stream=True)
 
         # User data hash
         user_hash = hashlib.sha256()
         user_hash.update(name.encode('utf-8'))
         user_hash.update(gender.encode('utf-8'))
-        user_hash = user_hash.hexdigest()
+        hash_str = user_hash.hexdigest()
 
         # Convert to numpy array
         array = np.array(Image.open(io.BytesIO(data.raw.read())))
@@ -106,30 +108,30 @@ class Faces(object):
         # If embedding is found
         if embedding:
             # Find user if hash already in database
-            if user_hash in self.hashes:
+            if hash_str in self.hashes:
                 # Find index
-                index = self.hashes.index(user_hash)
+                index = self.hashes.index(hash_str)
                 # Update existing user embedding
                 self.embeddings[index] = embedding[0]
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
 
-                rtn = [' '.join(('Updated', user_hash, 'embedding'))]
+                rtn = [' '.join(('Updated', hash_str, 'embedding'))]
             # Name not in database
             else:
                 # Add hasb and data to database
-                self.hashes.append(user_hash)
+                self.hashes.append(hash_str)
                 self.embeddings.append(embedding[0])
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
 
                 # Add user to user db
-                user_info = (user_hash, name, gender)
-                self.c.execute('INSERT INTO users VALUES (?,?,?)', user_info)
-                self.conn.commit()   
+                user_info = (hash_str, name, gender)
+                self.cursor.execute('INSERT INTO users VALUES (?,?,?)', user_info)
+                self.conn.commit()
 
-                rtn = [' '.join(('Added', user_hash, 'embedding'))]
- 
+                rtn = [' '.join(('Added', hash_str, 'embedding'))]
+
         # No face found in image
         else:
             rtn = ['No face found']

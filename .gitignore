@@ -1,4 +1,7 @@
 # Ignore project created files
+database.py
+embed.py
+userdb.py
 imagebank/api/migrations
 imagebank/db.sqlite3
 imagebank/database
@@ -102,3 +105,6 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# Visual Studio Code settings
+.vscode/

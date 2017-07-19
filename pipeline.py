@@ -1,10 +1,9 @@
+'''Pipeline takes an input image, passes it through the API, and displays and image
+with the detected faces and users drawn'''
 import io
 import sys
 import requests
-import numpy as np
 from PIL import Image, ImageDraw
-
-import face_recognition
 
 
 def main():
@@ -16,9 +15,9 @@ def main():
     imname = imagepath.split('/')[-1]
 
     # Convert image to bytes
-    im = Image.open(imagepath)
+    image = Image.open(imagepath)
     imbytes = io.BytesIO()
-    im.save(imbytes, format='jpeg')
+    image.save(imbytes, format='jpeg')
 
     # Send a HTTP POST request and print response
     auth = ('admin', 'adminadmin')
@@ -26,17 +25,21 @@ def main():
     files = {'image': (imname, imbytes.getvalue())}
     resp = requests.post(
         'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
+
     print(len(resp.json()), 'faces detected')
     for face in resp.json():
         print(face)
 
     # Draw detected faces
     for face in resp.json():
-        drawInfo(im, face['location'], face['name'])
-    im.show()
+        drawinfo(image, face['location'], face['name'])
+    image.show()
 
-def drawInfo(im, locs, text):
-    draw = ImageDraw.Draw(im)
+def drawinfo(image, locs, text):
+    '''Draws rectangle around face and prints user name next to it.
+    Includes a black border around text for visibility.'''
+
+    draw = ImageDraw.Draw(image)
     (top, right, bottom, left) = locs
     # Bounding box
     draw.rectangle(((left, top), (right, bottom)), outline='red')
