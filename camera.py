@@ -26,7 +26,8 @@ def main():
         _, frame = video_capture.read()
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
         locs = face_recognition.face_locations(small_frame)
-
+        print('\033c')
+        print('Frame', framecount)
         if locs:
             for (top, right, bottom, left) in locs:
                 face = small_frame[top:bottom, left:right]
@@ -37,14 +38,13 @@ def main():
                 resp = requests.post(
                     'http://' + ipport + '/imagebank/', auth=auth, data=data, files=files)
                 
-                print('\033c')
-                print('Frame', framecount)
+
                 print(json.dumps(resp.json(), indent=4))
 
-                if resp.json() != ['No faces found']:
+                if resp.json() != ['No face found']:
                     cv2.rectangle(frame, (4*left, 4*top), (4*right, 4*bottom), (0,0,255), 2)
                     cv2.putText(frame, resp.json()[0]['name'], (4*left+6, 4*bottom-6), cv2.FONT_HERSHEY_DUPLEX, 1.5, (255,255,0), 2)
-        print()
+
         image.set_data(frame)
         fig.canvas.flush_events()
     
