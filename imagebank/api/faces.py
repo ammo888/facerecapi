@@ -79,7 +79,7 @@ class Faces(object):
                     rtn.append(dict(zip(keys, no_face)))
         # No face found in image
         else:
-            rtn.append('No faces found')
+            rtn.append('No face found')
 
         return rtn
 
@@ -109,10 +109,8 @@ class Faces(object):
             if user_hash in self.hashes:
                 # Find index
                 index = self.hashes.index(user_hash)
-                # Update existing embedding
-                # The methodology of updating an existing embedding isn't concrete
-                self.embeddings[index] = (
-                    self.embeddings[index] + embedding[0]) / 2
+                # Update existing user embedding
+                self.embeddings[index] = embedding[0]
                 # Recreate cKDTree
                 self.tree = spatial.cKDTree(self.embeddings)
 
