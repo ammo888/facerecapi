@@ -1,5 +1,5 @@
-'''Pipeline takes an input image, passes it through the API, and displays and image
-with the detected faces and users drawn'''
+"""Pipeline takes an input image, passes it through the API, and displays and image
+with the detected faces and users drawn"""
 import io
 import sys
 import requests
@@ -36,8 +36,8 @@ def main():
     image.show()
 
 def drawinfo(image, locs, text):
-    '''Draws rectangle around face and prints user name next to it.
-    Includes a black border around text for visibility.'''
+    """Draws rectangle around face and prints user name next to it.
+    Includes a black border around text for visibility."""
 
     draw = ImageDraw.Draw(image)
     (top, right, bottom, left) = locs

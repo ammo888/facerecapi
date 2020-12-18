@@ -1,5 +1,5 @@
-'''Definition for Faces class that handles the face recognition
-part of the API'''
+"""Definition for Faces class that handles the face recognition
+part of the API"""
 import os
 import io
 import time
@@ -16,8 +16,8 @@ import face_recognition
 
 
 class Faces(object):
-    '''Class that handles identifying faces in input images and updating
-    the user database.'''
+    """Class that handles identifying faces in input images and updating
+    the user database."""
 
     def __init__(self):
         # Open .pickle files - our database

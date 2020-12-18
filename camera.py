@@ -1,6 +1,6 @@
-'''Camera uses the device's primary camera to capture frames,
+"""Camera uses the device's primary camera to capture frames,
 pass the through the API, and output frames with outlined faces
-and user info'''
+and user info"""
 import sys
 import json
 import cv2
@@ -11,7 +11,7 @@ import face_recognition
 
 
 def main():
-    '''Camera to API'''
+    """Camera to API"""
     ipport = sys.argv[1]
     video_capture = cv2.VideoCapture(0)
     width = video_capture.get(cv2.CAP_PROP_FRAME_WIDTH)

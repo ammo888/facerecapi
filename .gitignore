@@ -1,11 +1,3 @@
-# Ignore project created files
-database.py
-embed.py
-userdb.py
-imagebank/api/migrations
-imagebank/db.sqlite3
-imagebank/database
-imagebank/images
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -107,4 +99,5 @@ ENV/
 .mypy_cache/
 
 # Visual Studio Code settings
+.idea/
 .vscode/
